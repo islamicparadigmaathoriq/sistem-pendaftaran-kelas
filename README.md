@@ -278,12 +278,14 @@ Hak cipta © 2025 islamicparadigmaathoriq.
 * Workflow Git (branch + PR) sedang dipelajari.
 * Testing email dengan Nodemailer sudah **berhasil secara lokal** menggunakan Gmail App Password.
 * Branch `chore/testing` dibuat untuk menyimpan `scripts/test-email.js` (PR tidak di-merge ke `main` agar tetap jadi catatan progres).
-* Dokumentasi API Spec, ERD visual, dan panduan deploy detail masih perlu ditambahkan.
+* **Dokumentasi API Spec (API_SPEC.md) sudah selesai dibuat.**
+* ERD visual dan panduan deploy detail masih perlu ditambahkan.
 * Deployment (Vercel + Railway/Supabase) dan video demo masih pending.
 
 📌 **Target berikutnya agar tugas selesai**:
 
-1. Menyusun **API Spec formal**.
-2. Membuat **ERD / Arsitektur visual**.
-3. Menambahkan **Panduan Deploy** lebih lengkap.
-4. Menyusun **video demo aplikasi**.
+1. Membuat **ERD / Arsitektur visual**.
+2. Menambahkan **Panduan Deploy** lebih lengkap.
+3. Menyusun **video demo aplikasi**.
+
+
