@@ -1,103 +1,72 @@
-import Image from "next/image";
+// file: app/page.tsx
+
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const digioLogoSrc = "/digio-logo.png"; // Pastikan file logo ada di direktori `public`
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sisi Kiri: Latar Belakang Biru */}
+      <div className="relative flex w-1/2 flex-col justify-between bg-gradient-to-br from-blue-600 to-blue-800 p-12 text-white">
+        {/* Latar Belakang Gelombang (simulasi) */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500 opacity-30 blur-xl"></div>
+          <div className="absolute -top-10 right-0 h-48 w-48 rounded-full bg-blue-400 opacity-20 blur-xl"></div>
+          <div className="absolute bottom-10 right-10 h-32 w-32 rounded-full bg-blue-300 opacity-20 blur-xl"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Logo/Nama Perusahaan di Kiri Atas */}
+        <div className="absolute left-12 top-12 text-lg font-bold text-white">
+          DigiO Learning Center
+        </div>
+
+        {/* Konten Utama di Tengah */}
+        <div className="relative z-10 my-auto flex flex-col items-center justify-center text-center">
+          <p className="mb-2 text-lg">Nice to see you again</p>
+          <h1 className="mb-6 text-6xl font-extrabold tracking-tight">WELCOME BACK</h1>
+          <div className="mb-8 h-1 w-24 bg-white opacity-50"></div>
+          <p className="max-w-md text-lg leading-relaxed">
+            lembaga pelatihan teknologi yang berfokus pada pengembangan keterampilan digital praktis sesuai kebutuhan
+            industri modern. Dengan pendekatan berbasis proyek dan materi yang up-to-date, DigiO menghadirkan kursus
+            yang relevan untuk menyiapkan peserta menjadi talenta digital unggul.
+          </p>
+        </div>
+      </div>
+
+      {/* Sisi Kanan: Area Tombol */}
+      <div className="flex w-1/2 flex-col items-center justify-center bg-white p-12">
+        <div className="w-full max-w-md text-center">
+          {/* Logo DigiO */}
+          <div className="mx-auto mb-8">
+            <Image
+              src={digioLogoSrc}
+              alt="DigiO Learning Center Logo"
+              width={180}
+              height={180}
+              className="mx-auto"
+            />
+          </div>
+
+          {/* Tombol DAFTAR dan LOGIN */}
+          <div className="flex flex-col space-y-4">
+            <Link href="/register" legacyBehavior>
+              <a className="w-full rounded-full bg-blue-600 px-6 py-3 text-lg font-bold text-white transition hover:bg-blue-700 shadow-lg">
+                DAFTAR
+              </a>
+            </Link>
+            <Link href="/login" legacyBehavior>
+              <a className="w-full rounded-full border-2 border-blue-600 px-6 py-3 text-lg font-bold text-blue-600 transition hover:bg-blue-50">
+                LOGIN
+              </a>
+            </Link>
+          </div>
+
+          {/* Tagline Paling Bawah */}
+          <p className="mt-8 text-xl font-semibold text-gray-700">Daftar dan ikuti kelas yang kamu inginkan!</p>
+        </div>
+      </div>
     </div>
   );
 }
