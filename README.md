@@ -22,7 +22,8 @@ Admin dapat membuat, mengedit, menghapus kelas, serta melihat daftar peserta.
 10. [Troubleshooting umum](#troubleshooting-umum)
 11. [Kontribusi](#kontribusi)
 12. [License](#license)
-13. [Catatan Perkembangan](#catatan-perkembangan)
+13. [ERD / Arsitektur Visual](#erd--arsitektur-visual)
+14. [Catatan Perkembangan](#catatan-perkembangan)
 
 ---
 
@@ -268,6 +269,18 @@ Hak cipta © 2025 islamicparadigmaathoriq.
 
 ---
 
+## ERD / Arsitektur Visual
+
+Berikut adalah Entity Relationship Diagram (ERD) sistem:
+
+![ERD](./prisma/ERD.svg)
+
+**Keterangan simbol:**
+- 🔑 Primary Key  
+- ❓ Kolom opsional (nullable)
+
+---
+
 ## Catatan Perkembangan
 
 📌 **Status saat ini**:
@@ -279,13 +292,13 @@ Hak cipta © 2025 islamicparadigmaathoriq.
 * Testing email dengan Nodemailer sudah **berhasil secara lokal** menggunakan Gmail App Password.
 * Branch `chore/testing` dibuat untuk menyimpan `scripts/test-email.js` (PR tidak di-merge ke `main` agar tetap jadi catatan progres).
 * **Dokumentasi API Spec (API_SPEC.md) sudah selesai dibuat.**
-* ERD visual dan panduan deploy detail masih perlu ditambahkan.
+* ERD visual sudah dibuat dan dimasukkan ke repo.
+* panduan deploy detail masih perlu ditambahkan.
 * Deployment (Vercel + Railway/Supabase) dan video demo masih pending.
 
 📌 **Target berikutnya agar tugas selesai**:
 
-1. Membuat **ERD / Arsitektur visual**.
-2. Menambahkan **Panduan Deploy** lebih lengkap.
-3. Menyusun **video demo aplikasi**.
+1. Menambahkan **Panduan Deploy** lebih lengkap.
+2. Menyusun **video demo aplikasi**.
 
 
