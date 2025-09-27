@@ -2,8 +2,8 @@
 
 ## Deskripsi singkat
 
-Aplikasi web untuk pendaftaran kelas yang menampilkan kuota real-time. 
-Siswa dapat mendaftar kelas, melihat sisa kuota, dan menerima konfirmasi. 
+Aplikasi web untuk pendaftaran kelas yang menampilkan kuota real-time.
+Siswa dapat mendaftar kelas, melihat sisa kuota, dan menerima konfirmasi.
 Admin dapat membuat, mengedit, menghapus kelas, serta melihat daftar peserta.
 
 ---
@@ -22,6 +22,7 @@ Admin dapat membuat, mengedit, menghapus kelas, serta melihat daftar peserta.
 10. [Troubleshooting umum](#troubleshooting-umum)
 11. [Kontribusi](#kontribusi)
 12. [License](#license)
+13. [Catatan Perkembangan](#catatan-perkembangan)
 
 ---
 
@@ -250,7 +251,29 @@ git push -u origin feature/readme
 
 ## License
 
-Proyek ini dibuat untuk keperluan tugas pada mata kuliah Pemrograman Berbasis Web.  
+Proyek ini dibuat untuk keperluan tugas pada mata kuliah Pemrograman Berbasis Web.
 Hak cipta © 2025 islamicparadigmaathoriq.
 
+---
 
+## Catatan Perkembangan
+
+📌 **Status saat ini**:
+
+* README awal sudah dibuat.
+* `.env.example` sudah ditambahkan dan `.env.local` di-ignore.
+* GitHub repo sudah terbentuk.
+* Workflow Git (branch + PR) sedang dipelajari.
+* Testing email dengan Nodemailer **belum dilakukan** (opsi berikutnya).
+* Dokumentasi API Spec, ERD visual, dan panduan deploy detail masih perlu ditambahkan.
+* Deployment (Vercel + Railway/Supabase) dan video demo masih pending.
+
+📌 **Target berikutnya agar tugas selesai**:
+
+1. Lanjut ke **Testing Email** (Mailtrap/Gmail App Password).
+2. Menyusun **API Spec formal**.
+3. Membuat **ERD / Arsitektur visual**.
+4. Menambahkan **Panduan Deploy** lebih lengkap.
+5. Menyusun **video demo aplikasi**.
+
+---
