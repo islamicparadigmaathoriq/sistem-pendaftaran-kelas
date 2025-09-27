@@ -251,6 +251,6 @@ git push -u origin feature/readme
 ## License
 
 Proyek ini dibuat untuk keperluan tugas pada mata kuliah Pemrograman Berbasis Web.  
-Hak cipta © 2025 [islamicparadigmaathoriq].
+Hak cipta © 2025 islamicparadigmaathoriq.
 
 
