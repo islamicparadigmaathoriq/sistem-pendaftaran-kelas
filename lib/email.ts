@@ -8,11 +8,16 @@ dotenv.config();
 
 // Konfigurasi transporter email
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Contoh: 'gmail', 'outlook', 'yahoo'
-  auth: {
+  host: 'smtp.gmail.com',
+  port: 465, // gunakan 465 untuk SSL
+  secure: true, // true = pakai SSL/TLS
+    auth: {
     user: process.env.EMAIL_USER, // Alamat email pengirim
     pass: process.env.EMAIL_PASS, // Kata sandi atau App Password
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 export const sendRegistrationEmail = async (to: string, userName: string, className: string) => {
