@@ -85,13 +85,13 @@ npm install
 
 ```bash
 # macOS / Linux
-cp .env.example .env.local
+cp .env.example .env
 
 # Windows (PowerShell)
-copy .env.example .env.local
+copy .env.example .env
 ```
 
-5. Edit `.env.local` dan isi variabel lingkungan (lihat bagian "Variabel Lingkungan")
+5. Edit `.env` dan isi variabel lingkungan (lihat bagian "Variabel Lingkungan")
 
 6. Jalankan migrasi database (Prisma)
 
@@ -113,13 +113,13 @@ Buka browser: `http://localhost:3000`
 
 ## Variabel Lingkungan (.env)
 
-Buat file `.env.local` di root project dengan isi minimal seperti berikut (contoh):
+Buat file `.env` di root project dengan isi minimal seperti berikut (contoh):
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/sistem-pendaftaran-db"
 JWT_SECRET="ganti_dengan_string_acak_yang_kuat"
-EMAIL_USER="email_pengirim@example.com"
-EMAIL_PASS="app_password_or_smtp_password"
+EMAIL_USER=email_pengirim@example.com
+EMAIL_PASS=app_password_or_smtp_password
 ```
 
 **Catatan penting untuk EMAIL_PASS:**
@@ -165,7 +165,6 @@ Jika email konfirmasi tidak masuk saat pengujian lokal, lakukan pengecekan:
 
 1. Pastikan `EMAIL_USER` dan `EMAIL_PASS` benar.
 2. Untuk Gmail: aktifkan 2FA dan buat App Password, gunakan App Password itu sebagai `EMAIL_PASS`.
-3. Alternatif: gunakan Mailtrap (mailtrap.io) untuk menangkap email testing.
 
 **Skrip kecil untuk verifikasi transporter (node):**
 
@@ -174,15 +173,20 @@ Buat file `scripts/test-email.js` di root proyek (Node, bukan Next):
 ```js
 // scripts/test-email.js
 const nodemailer = require('nodemailer');
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config();
 
 async function main() {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 
   try {
@@ -202,7 +206,15 @@ Jalankan:
 node scripts/test-email.js
 ```
 
-Jika `SMTP connection OK` → transporter valid.
+Jika `SMTP connection OK` → transporter valid atau koneksi berhasil.
+Jika `Email terkirim: <message-id>` → email terkirim.
+
+📌 **Catatan penting dari hasil uji coba:**
+
+* Tanpa `tls: { rejectUnauthorized: false }` → di environment lokal (Windows + Node.js) TLS handshake gagal dengan error *"self-signed certificate in certificate chain"*.
+* Dengan tambahan `tls: { rejectUnauthorized: false }` → koneksi berhasil dan email terkirim.
+* Ini aman dipakai untuk **testing lokal** 👍.
+* Saat sudah deploy ke Vercel/hosting biasanya **tidak perlu lagi** opsi TLS longgar karena server punya sertifikat CA valid.
 
 ---
 
@@ -217,7 +229,7 @@ Langkah ringkas:
 
 1. Push repo ke GitHub.
 2. Daftar di Vercel, hubungkan repo.
-3. Atur environment variables di Vercel sesuai `.env.local`.
+3. Atur environment variables di Vercel sesuai `.env`.
 4. Atur database di Railway/Supabase dan update `DATABASE_URL` di Vercel.
 5. Deploy.
 
@@ -261,19 +273,16 @@ Hak cipta © 2025 islamicparadigmaathoriq.
 📌 **Status saat ini**:
 
 * README awal sudah dibuat.
-* `.env.example` sudah ditambahkan dan `.env.local` di-ignore.
+* `.env.example` sudah ditambahkan dan `.env` di-ignore.
 * GitHub repo sudah terbentuk.
 * Workflow Git (branch + PR) sedang dipelajari.
-* Testing email dengan Nodemailer **belum dilakukan** (opsi berikutnya).
+* Testing email dengan Nodemailer **sudah dilakukan** dan berhasil (pakai Gmail App Password).
 * Dokumentasi API Spec, ERD visual, dan panduan deploy detail masih perlu ditambahkan.
 * Deployment (Vercel + Railway/Supabase) dan video demo masih pending.
 
 📌 **Target berikutnya agar tugas selesai**:
 
-1. Lanjut ke **Testing Email** (Mailtrap/Gmail App Password).
-2. Menyusun **API Spec formal**.
-3. Membuat **ERD / Arsitektur visual**.
-4. Menambahkan **Panduan Deploy** lebih lengkap.
-5. Menyusun **video demo aplikasi**.
-
----
+1. Menyusun **API Spec formal**.
+2. Membuat **ERD / Arsitektur visual**.
+3. Menambahkan **Panduan Deploy** lebih lengkap.
+4. Menyusun **video demo aplikasi**.
