@@ -18,12 +18,13 @@ Admin dapat membuat, mengedit, menghapus kelas, serta melihat daftar peserta.
 6. [Database & Prisma](#database--prisma)
 7. [Script NPM Penting](#script-npm-penting)
 8. [Testing Email (debugging nodemailer)](#testing-email-debugging-nodemailer)
-9. [Panduan Deploy Singkat](#panduan-deploy-singkat)
+9. [Panduan Deploy Lengkap](#panduan-deploy-lengkap)
 10. [Troubleshooting umum](#troubleshooting-umum)
 11. [Kontribusi](#kontribusi)
 12. [License](#license)
 13. [ERD / Arsitektur Visual](#erd--arsitektur-visual)
 14. [Catatan Perkembangan](#catatan-perkembangan)
+15. [Tabel Progres Proyek](#Tabel-Progres-Proyek)
 
 ---
 
@@ -219,20 +220,50 @@ Jika `Email terkirim: <message-id>` → email terkirim.
 
 ---
 
-## Panduan Deploy Singkat
+## Panduan Deploy Lengkap
 
 Saran deploy:
 
 * Frontend + API: **Vercel** (Next.js sangat cocok)
-* Database: **Railway** atau **Supabase** (saya menggunakan PostgreSQL)
+* Database: **Railway** atau **Supabase** (PostgreSQL)
 
-Langkah ringkas:
+### 1. Persiapan
+- Pastikan project sudah di-push ke GitHub.
+- Buat akun:
+  - [Vercel](https://vercel.com) → hosting frontend + API
+  - [Supabase](https://supabase.com) → hosting PostgreSQL
 
-1. Push repo ke GitHub.
-2. Daftar di Vercel, hubungkan repo.
-3. Atur environment variables di Vercel sesuai `.env`.
-4. Atur database di Railway/Supabase dan update `DATABASE_URL` di Vercel.
-5. Deploy.
+---
+
+### 2. Buat Database PostgreSQL di Supabase
+1. Login ke [Supabase Dashboard](https://app.supabase.com).
+2. Klik **New Project** → pilih nama project.
+3. Pilih region (disarankan yang terdekat, misalnya Singapore).
+4. Tentukan password database (catat baik-baik).
+5. Setelah project dibuat, buka **Project Settings → Database**.
+6. Salin **Connection String** format `DATABASE_URL`: (pakai yang Session pooler)
+
+---
+
+### 3. Deploy Backend + Frontend di Vercel
+1. Login ke Vercel → **New Project** → Import repository dari GitHub.
+2. Pilih project `sistem-pendaftaran-kelas`.
+3. Atur **Environment Variables** di Vercel:
+- `DATABASE_URL` → isi dengan connection string dari Supabase
+- `JWT_SECRET` → isi string acak (gunakan [randomkeygen.com](https://randomkeygen.com))
+- `EMAIL_USER` → email pengirim (mis. Gmail)
+- `EMAIL_PASS` → App Password Gmail (jangan password asli)
+4. Klik **Deploy**.
+
+---
+
+### 4. Migrasi Database Prisma ke Supabase
+Supaya tabel otomatis dibuat di Supabase:
+
+1. Pastikan `.env` lokal mengarah ke Supabase:
+```env
+DATABASE_URL="postgresql://postgres:<PASSWORD>@db.<HASH>.supabase.co:5432/postgres"
+```
 
 > Catatan: Email (Nodemailer) sering diblokir saat dites dari `localhost` oleh penyedia email. Sebaiknya atur App Password (Gmail) atau gunakan layanan SMTP tepercaya saat deploy.
 
@@ -288,17 +319,54 @@ Berikut adalah Entity Relationship Diagram (ERD) sistem:
 * README awal sudah dibuat.
 * `.env.example` sudah ditambahkan dan `.env` di-ignore.
 * GitHub repo sudah terbentuk.
-* Workflow Git (branch + PR) sedang dipelajari.
+* Workflow Git (branch + PR) sudah dipraktikkan (branch docs/readme, chore/testing).
 * Testing email dengan Nodemailer sudah **berhasil secara lokal** menggunakan Gmail App Password.
-* Branch `chore/testing` dibuat untuk menyimpan `scripts/test-email.js` (PR tidak di-merge ke `main` agar tetap jadi catatan progres).
-* **Dokumentasi API Spec (API_SPEC.md) sudah selesai dibuat.**
-* ERD visual sudah dibuat dan dimasukkan ke repo.
-* panduan deploy detail masih perlu ditambahkan.
-* Deployment (Vercel + Railway/Supabase) dan video demo masih pending.
+* Branch `chore/testing` berisi `scripts/test-email.js` sebagai catatan eksperimen..
+* Dokumentasi API Spec (API_SPEC.md) sudah selesai dibuat.
+* ERD visual (ERD.svg) sudah dibuat & masuk repo.
+* Panduan deploy detail sudah ditambahkan & diuji (Vercel + Supabase).
+* Aplikasi berhasil dideploy online.
+* Video demo masih pending.
+* Unit test & E2E test masih pending.
+* Aksesibilitas frontend belum diuji penuh.
 
 📌 **Target berikutnya agar tugas selesai**:
 
-1. Menambahkan **Panduan Deploy** lebih lengkap.
-2. Menyusun **video demo aplikasi**.
+1. Membuat **video demo aplikasi**.
+2. Menambahkan unit test & E2E test minimal.
+3. Uji aksesibilitas frontend.
+4. (Opsional bonus) Role granular & dashboard analitik.
 
+---
 
+## Tabel Progres Proyek
+
+| Aspek Penilaian          | Detail Tugas                              | Status |
+|---------------------------|-------------------------------------------|--------|
+| **Kelengkapan Fitur**     | Register & Login dengan JWT                | ✅     |
+|                           | CRUD Kelas untuk Admin (Create, Read, Update, Delete) | ✅ |
+|                           | Student bisa melihat daftar kelas + sisa kuota | ✅ |
+|                           | Student bisa mendaftar kelas (kuota real-time) | ✅ |
+|                           | Admin bisa melihat daftar peserta per kelas | ✅ |
+| **Desain & UX**           | Navigasi jelas, responsif                 | ✅     |
+|                           | Aksesibilitas dasar                       | 🔄 (belum diuji penuh) |
+| **Kode Backend**          | Struktur modular API Routes               | ✅     |
+|                           | Validasi input & error handling           | ✅     |
+|                           | Middleware JWT + role-based               | ✅     |
+|                           | Keamanan dasar (hashed password, JWT secret, .env) | ✅ |
+| **Kode Frontend**         | State handling (React hooks)              | ✅     |
+|                           | Komponen reusable (Popup, API helper)     | ✅     |
+|                           | Error handling di form & dashboard        | ✅     |
+| **Testing**               | Unit test / E2E test minimal              | ❌     |
+| **Dokumentasi**           | README proyek                             | ✅     |
+|                           | API Spec (API_SPEC.md)                    | ✅     |
+|                           | ERD / Arsitektur Visual                   | ✅     |
+|                           | Panduan Deploy                            | ✅     |
+| **Deployment & Demo**     | Deploy aplikasi online (Vercel + DB)      | ✅     |
+|                           | Video demo aplikasi                       | ❌     |
+| **Git Hygiene**           | Commit kecil bermakna, branching, PR/issues | 🔄 (sudah latihan, belum konsisten) |
+| **Bonus (opsional)**      | Notifikasi email saat sukses daftar       | ✅     |
+|                           | Role & izin granular (Admin/Staff)        | 🔄 (baru Admin & Student) |
+|                           | Dashboard analitik                        | ❌     |
+
+---
