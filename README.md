@@ -276,7 +276,8 @@ Hak cipta © 2025 islamicparadigmaathoriq.
 * `.env.example` sudah ditambahkan dan `.env` di-ignore.
 * GitHub repo sudah terbentuk.
 * Workflow Git (branch + PR) sedang dipelajari.
-* Testing email dengan Nodemailer **sudah dilakukan** dan berhasil (pakai Gmail App Password).
+* Testing email dengan Nodemailer sudah **berhasil secara lokal** menggunakan Gmail App Password.
+* Branch `chore/testing` dibuat untuk menyimpan `scripts/test-email.js` (PR tidak di-merge ke `main` agar tetap jadi catatan progres).
 * Dokumentasi API Spec, ERD visual, dan panduan deploy detail masih perlu ditambahkan.
 * Deployment (Vercel + Railway/Supabase) dan video demo masih pending.
 
