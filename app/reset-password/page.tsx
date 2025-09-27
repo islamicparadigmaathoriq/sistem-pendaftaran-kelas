@@ -1,64 +1,67 @@
 // file: app/reset-password/page.tsx
-'use client';
+"use client"; // ⬅️ perubahan: tetap sama, tapi kita tekankan harus ada
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { apiPost } from '@/lib/api';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState, useEffect, Suspense } from "react"; // ⬅️ perubahan: tambah `Suspense`
+import { useRouter, useSearchParams } from "next/navigation";
+import { apiPost } from "@/lib/api";
+import Image from "next/image";
+import Link from "next/link";
 
-export default function ResetPasswordPage() {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+// ⬅️ perubahan: logika utama sekarang dipindah ke komponen inner
+function ResetPasswordPageInner() {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams(); // ⬅️ tetap sama, tapi sekarang aman karena ada Suspense di luar
 
   const bgImageSrc = "/background.jpg";
 
   useEffect(() => {
-    const tokenFromUrl = searchParams.get('token');
+    const tokenFromUrl = searchParams.get("token");
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
     } else {
-      setMessage('Tautan reset password tidak valid.');
+      setMessage("Tautan reset password tidak valid.");
     }
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+    setMessage("");
     setIsSuccess(false);
 
     if (newPassword !== confirmPassword) {
-      setMessage('Password baru tidak cocok.');
+      setMessage("Password baru tidak cocok.");
       setLoading(false);
       return;
     }
 
     if (!token) {
-      setMessage('Tautan reset password tidak valid.');
+      setMessage("Tautan reset password tidak valid.");
       setLoading(false);
       return;
     }
 
     try {
-      await apiPost('auth/reset-password', {
+      await apiPost("auth/reset-password", {
         token,
-        newPassword
+        newPassword,
       });
-      setMessage('Password berhasil diubah! Anda akan dialihkan ke halaman login.');
+      setMessage(
+        "Password berhasil diubah! Anda akan dialihkan ke halaman login."
+      );
       setIsSuccess(true);
       setTimeout(() => {
-        router.push('/login');
+        router.push("/login");
       }, 3000);
     } catch (err: any) {
-      setMessage(err.message || 'Terjadi kesalahan. Silakan coba lagi.');
+      setMessage(err.message || "Terjadi kesalahan. Silakan coba lagi.");
       setIsSuccess(false);
     } finally {
       setLoading(false);
@@ -69,7 +72,14 @@ export default function ResetPasswordPage() {
     <div className="relative flex min-h-screen items-center justify-center">
       {/* Background Image Overlay */}
       <div className="absolute inset-0 z-0">
-        <Image src={bgImageSrc} alt="Background" fill style={{ objectFit: 'cover' }} quality={100} className="opacity-50" />
+        <Image
+          src={bgImageSrc}
+          alt="Background"
+          fill
+          style={{ objectFit: "cover" }}
+          quality={100}
+          className="opacity-50"
+        />
       </div>
 
       <div className="relative z-10 w-full max-w-sm rounded-lg bg-white p-8 shadow-md backdrop-blur-sm">
@@ -79,13 +89,22 @@ export default function ResetPasswordPage() {
 
         <form onSubmit={handleSubmit}>
           {message && (
-            <p className={`mb-4 text-center ${isSuccess ? 'text-green-500' : 'text-red-500'}`}>
+            <p
+              className={`mb-4 text-center ${
+                isSuccess ? "text-green-500" : "text-red-500"
+              }`}
+            >
               {message}
             </p>
           )}
-          
+
           <div className="mb-4">
-            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 sr-only">Password Baru</label>
+            <label
+              htmlFor="newPassword"
+              className="block text-sm font-medium text-gray-700 sr-only"
+            >
+              Password Baru
+            </label>
             <input
               id="newPassword"
               type="password"
@@ -97,7 +116,12 @@ export default function ResetPasswordPage() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 sr-only">Konfirmasi Password</label>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 sr-only"
+            >
+              Konfirmasi Password
+            </label>
             <input
               id="confirmPassword"
               type="password"
@@ -108,23 +132,32 @@ export default function ResetPasswordPage() {
               required
             />
           </div>
-          
+
           <button
             type="submit"
             className="w-full rounded-md bg-blue-500 py-3 font-bold text-white transition hover:bg-blue-600"
             disabled={loading}
           >
-            {loading ? 'Mengubah Password...' : 'Ubah Password'}
+            {loading ? "Mengubah Password..." : "Ubah Password"}
           </button>
         </form>
 
         <p className="mt-4 text-center text-sm">
-          Kembali ke{' '}
+          Kembali ke{" "}
           <Link href="/login" className="text-blue-500 hover:underline">
             Login
           </Link>
         </p>
       </div>
     </div>
+  );
+}
+
+// ⬅️ perubahan utama: komponen utama sekarang hanya Suspense wrapper
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <ResetPasswordPageInner />
+    </Suspense>
   );
 }
