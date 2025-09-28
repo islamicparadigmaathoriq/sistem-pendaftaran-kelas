@@ -105,13 +105,16 @@ export default function LoginPage() {
             />
           </div>
           <div className="mb-6 text-right text-sm">
-            <Link href="/forgot-password" className="text-blue-700 hover:underline">
+            <Link 
+              href="/forgot-password" 
+              className="font-medium text-blue-700 underline hover:text-blue-800"
+            >
               Forgot password?
             </Link>
           </div>
           <button
             type="submit"
-            className="w-full rounded-md bg-blue-500 py-3 font-bold text-white transition hover:bg-blue-600"
+            className="w-full rounded-md bg-blue-700 py-3 font-bold text-white transition hover:bg-blue-800"
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}
@@ -119,7 +122,7 @@ export default function LoginPage() {
         </form>
         <p className="mt-4 text-center text-sm">
           Don't have an account?{' '}
-          <Link href="/register" className="text-blue-700 hover:underline">
+          <Link href="/register" className="font-medium text-blue-700 underline hover:text-blue-800">
             Sign up
           </Link>
         </p>
