@@ -23,8 +23,9 @@ Admin dapat membuat, mengedit, menghapus kelas, serta melihat daftar peserta.
 11. [Kontribusi](#kontribusi)
 12. [License](#license)
 13. [ERD / Arsitektur Visual](#erd--arsitektur-visual)
-14. [Catatan Perkembangan](#catatan-perkembangan)
-15. [Tabel Progres Proyek](#Tabel-Progres-Proyek)
+14. [Hasil Uji Aksesibilitas Frontend](#Hasil-Uji-Aksesibilitas-Frontend)
+15. [Catatan Perkembangan](#catatan-perkembangan)
+16. [Tabel Progres Proyek](#Tabel-Progres-Proyek)
 
 ---
 
@@ -312,6 +313,31 @@ Berikut adalah Entity Relationship Diagram (ERD) sistem:
 
 ---
 
+## Hasil Uji Aksesibilitas Frontend
+
+Pengujian dilakukan dengan **Lighthouse (Chrome DevTools)** pada tab **Accessibility**.  
+Target skor minimal adalah **≥ 80**.
+
+| Halaman                                   | Skor Lighthouse |
+|-------------------------------------------|-----------------|
+| Home / Landing (`app/page.tsx`)           | ✅ 100 |
+| Login (`app/login/page.tsx`)              | ⚠️ 91 |
+| Register (`app/register/page.tsx`)        | ✅ 96 |
+| Dashboard Student (`app/dashboard/page.tsx`)| ✅ 94 |
+| Dashboard Admin (`app/admin/page.tsx`)    | ✅ 95 |
+| Forgot Password (`app/forgot-password/page.tsx`) | ✅ 96 |
+| Reset Password (`app/reset-password/page.tsx`)   | ✅ 96 |
+
+### Catatan Perbaikan yang Sudah Dilakukan
+- Menambahkan atribut `lang="id"` di `<html>`.
+- Menambahkan `<title>` pada setiap halaman.
+- Memberikan `alt` pada semua elemen gambar.
+- Perbaikan kontras warna pada tombol & link.
+- Menambahkan *underline* dan *focus style* pada link/tombol untuk navigasi keyboard.
+- Uji manual navigasi dengan keyboard (`Tab`, `Enter`, `Space`) → hasil **sesuai** (tidak ada *focus trap*, urutan logis).
+
+---
+
 ## Catatan Perkembangan
 
 📌 **Status saat ini**:
@@ -319,23 +345,26 @@ Berikut adalah Entity Relationship Diagram (ERD) sistem:
 * README awal sudah dibuat.
 * `.env.example` sudah ditambahkan dan `.env` di-ignore.
 * GitHub repo sudah terbentuk.
-* Workflow Git (branch + PR) sudah dipraktikkan (branch docs/readme, chore/testing).
+* Workflow Git (branch + PR) sudah dipraktikkan (branch `docs/readme`, `chore/testing`).
 * Testing email dengan Nodemailer sudah **berhasil secara lokal** menggunakan Gmail App Password.
-* Branch `chore/testing` berisi `scripts/test-email.js` sebagai catatan eksperimen..
-* Dokumentasi API Spec (API_SPEC.md) sudah selesai dibuat.
-* ERD visual (ERD.svg) sudah dibuat & masuk repo.
+* Branch `chore/testing` berisi `scripts/test-email.js` sebagai catatan eksperimen.
+* Dokumentasi API Spec (`API_SPEC.md`) sudah selesai dibuat.
+* ERD visual (`ERD.svg`) sudah dibuat & masuk repo.
 * Panduan deploy detail sudah ditambahkan & diuji (Vercel + Supabase).
 * Aplikasi berhasil dideploy online.
+* Pengujian aksesibilitas frontend dengan **Lighthouse** sudah dilakukan:
+  - Semua halaman memperoleh skor ≥ 91
+  - Halaman **Home**: skor 100
+  - Perbaikan warna kontras tombol & link sudah diterapkan
+  - Link/tombol sudah diberi *underline* + *focus style* untuk navigasi keyboard
 * Video demo masih pending.
 * Unit test & E2E test masih pending.
-* Aksesibilitas frontend belum diuji penuh.
 
 📌 **Target berikutnya agar tugas selesai**:
 
 1. Membuat **video demo aplikasi**.
-2. Menambahkan unit test & E2E test minimal.
-3. Uji aksesibilitas frontend.
-4. (Opsional bonus) Role granular & dashboard analitik.
+2. Menambahkan **unit test & E2E test minimal**.
+3. (Opsional bonus) Implementasi role granular & dashboard analitik.
 
 ---
 
@@ -349,7 +378,7 @@ Berikut adalah Entity Relationship Diagram (ERD) sistem:
 |                           | Student bisa mendaftar kelas (kuota real-time) | ✅ |
 |                           | Admin bisa melihat daftar peserta per kelas | ✅ |
 | **Desain & UX**           | Navigasi jelas, responsif                 | ✅     |
-|                           | Aksesibilitas dasar                       | 🔄 (belum diuji penuh) |
+|                           | Aksesibilitas dasar (Lighthouse ≥ 91)     | ✅     |
 | **Kode Backend**          | Struktur modular API Routes               | ✅     |
 |                           | Validasi input & error handling           | ✅     |
 |                           | Middleware JWT + role-based               | ✅     |
