@@ -26,6 +26,9 @@ export async function POST(req: Request) {
       },
     });
 
+    // Tambahan konsol untuk inti e2e
+    console.log('User found in API during test:', user);
+
     if (!user) {
       return NextResponse.json(
         { message: 'Invalid credentials' },

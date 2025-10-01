@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "jest",
     "test:backend": "jest --config jest.config.backend.js",
-    "test:e2e": "playwright test"
+    "test:e2e": "dotenv -e .env -- playwright test"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -39,6 +39,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/nodemailer": "^7.0.1",
     "@types/supertest": "^6.0.3",
+    "dotenv-cli": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
     "jest": "^30.2.0",
