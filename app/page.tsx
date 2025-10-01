@@ -48,7 +48,6 @@ export default function Home() {
               className="mx-auto"
             />
           </div>
-
           {/* Tombol DAFTAR dan LOGIN */}
           <div className="flex flex-col space-y-4">
             <Link href="/register" legacyBehavior>

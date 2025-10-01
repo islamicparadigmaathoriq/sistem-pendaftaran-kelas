@@ -1,12 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-// file: prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
 }
 
 datasource db {
@@ -15,36 +12,35 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
-  password  String
-  name      String?
-  role      Role       @default(STUDENT)
-  profilePicture String? // <-- TAMBAHAN
-  createdAt   DateTime @default(now()) // <--- TAMBAHAN
-  resetToken  String? // <--- TAMBAHAN
-  resetTokenExpiry DateTime? // <--- TAMBAHAN
-  registrations Registration[]
+  id               String         @id @default(uuid())
+  email            String         @unique
+  password         String
+  name             String?
+  role             Role           @default(STUDENT)
+  profilePicture   String?
+  createdAt        DateTime       @default(now())
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  registrations    Registration[]
 }
 
 model Class {
-  id        String     @id @default(uuid())
-  name      String
-  quota     Int
-  available Int
-  description String?   // TAMBAHAN
-  trainingDate  DateTime? // Ganti dari imageUrl menjadi trainingDate
+  id            String         @id @default(uuid())
+  name          String
+  quota         Int
+  available     Int
+  description   String?
+  trainingDate  DateTime?
   registrations Registration[]
 }
 
 model Registration {
-  id         String   @id @default(uuid())
-  userId     String
-  classId    String
-  createdAt  DateTime @default(now())
-
-  user  User @relation(fields: [userId], references: [id])
-  class Class @relation(fields: [classId], references: [id])
+  id        String   @id @default(uuid())
+  userId    String
+  classId   String
+  createdAt DateTime @default(now())
+  class     Class    @relation(fields: [classId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, classId])
 }

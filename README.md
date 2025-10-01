@@ -2,10 +2,11 @@
 
 ## Deskripsi singkat
 
-Aplikasi web untuk pendaftaran kelas yang menampilkan kuota real-time. 
-Siswa dapat mendaftar kelas, melihat sisa kuota, dan menerima konfirmasi. 
+Aplikasi web untuk pendaftaran kelas yang menampilkan kuota real-time.
+Siswa dapat mendaftar kelas, melihat sisa kuota, dan menerima konfirmasi.
 Admin dapat membuat, mengedit, menghapus kelas, serta melihat daftar peserta.
 
+Aplikasi Live: https://sistem-pendaftaran-kelas.vercel.app/
 ---
 
 ## Daftar Isi
@@ -18,122 +19,129 @@ Admin dapat membuat, mengedit, menghapus kelas, serta melihat daftar peserta.
 6. [Database & Prisma](#database--prisma)
 7. [Script NPM Penting](#script-npm-penting)
 8. [Testing Email (debugging nodemailer)](#testing-email-debugging-nodemailer)
-9. [Panduan Deploy Singkat](#panduan-deploy-singkat)
+9. [Panduan Deploy Lengkap](#panduan-deploy-lengkap)
 10. [Troubleshooting umum](#troubleshooting-umum)
 11. [Kontribusi](#kontribusi)
 12. [License](#license)
+13. [ERD / Arsitektur Visual](#erd--arsitektur-visual)
+14. [Hasil Uji Aksesibilitas Frontend](#Hasil-Uji-Aksesibilitas-Frontend)
+15. [Menjalankan Pengujian / Testing](#Menjalankan-Pengujian--Testing)
+16. [Catatan Perkembangan](#catatan-perkembangan)
+17. [Tabel Progres Proyek](#Tabel-Progres-Proyek)
 
 ---
 
 ## Fitur Utama
 
-* Registrasi & Login (JWT)
-* CRUD Kelas (Admin)
-* Lihat daftar kelas + sisa kuota (Student)
-* Pendaftaran kelas dengan kuota real-time (transaksi atomik dengan Prisma)
-* Reset password (forgot / reset)
-* Notifikasi email (Nodemailer) — konfigurasi diperlukan agar email benar-benar terkirim
+* Registrasi & Login berbasis JWT.
+* Manajemen Kelas (CRUD) oleh Admin.
+* Tampilan daftar kelas beserta sisa kuota untuk Siswa.
+* Pendaftaran kelas dengan kuota real-time (transaksi atomik dengan Prisma).
+* Fitur Lupa & Reset Password.
+* Notifikasi email otomatis (Nodemailer) untuk konfirmasi pendaftaran dan reset password.
 
 ---
 
 ## Stack Teknologi
 
 * Frontend: Next.js (App Router), React, TypeScript, Tailwind CSS
-* Backend: Next.js API Routes, Prisma (PostgreSQL)
-* Auth: bcryptjs + JWT
-* Email: Nodemailer
+* Backend: Next.js API Routes, Prisma ORM
+* Auth: `bcryptjs` untuk hashing password, `jsonwebtoken` (JWT) untuk sesi
+* Email: `Nodemailer` dengan Gmail App Password
 * Database: PostgreSQL
+* Testing: `Jest` untuk Unit Test (Backend), `Playwright` untuk E2E Test (Frontend)
 
 ---
 
 ## Prasyarat
 
-Pastikan terpasang di mesin lokal:
+Pastikan perangkat lokal ini sudah terinstal:
 
 * Node.js (v18+ direkomendasikan)
-* npm (atau yarn)
-* PostgreSQL (atau gunakan layanan hosted seperti Railway / Supabase)
+* npm (atau yarn/pnpm)
+* PostgreSQL (atau gunakan layanan hosted seperti Supabase)
 * Git
 
 ---
 
 ## Instalasi & Menjalankan Secara Lokal
 
-Ikuti langkah berikut dari terminal (Linux / macOS / WSL) atau PowerShell (Windows):
-
-1. Clone repository
+1. Clone repository ini:
 
 ```bash
-git clone <REPO_URL>
+git clone [https://github.com/islamicparadigmaathoriq/sistem-pendaftaran-kelas.git](https://github.com/islamicparadigmaathoriq/sistem-pendaftaran-kelas.git)
 cd sistem-pendaftaran-kelas
 ```
 
-2. Buat branch baru (opsional, direkomendasikan)
-
-```bash
-git checkout -b docs/readme
-```
-
-3. Install dependencies
+2. Install semua dependencies:
 
 ```bash
 npm install
 ```
 
-4. Buat file environment dari contoh
+3. Siapkan file environment: Salin dari contoh yang ada.
 
 ```bash
 # macOS / Linux
-cp .env.example .env.local
+cp .env.example .env
 
 # Windows (PowerShell)
-copy .env.example .env.local
+copy .env.example .env
 ```
 
-5. Edit `.env.local` dan isi variabel lingkungan (lihat bagian "Variabel Lingkungan")
+4. Konfigurasi `.env`: Buka file `.env` dan isi semua variabel yang dibutuhkan (lihat bagian Variabel Lingkungan).
 
-6. Jalankan migrasi database (Prisma)
+5. Jalankan migrasi database: Perintah ini akan membuat semua tabel di database Anda sesuai skema Prisma.
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate dev
 ```
 
-> Jika ini pertama kali menghubungkan ke database, Prisma akan membuat tabel sesuai skema.
-
-7. Jalankan aplikasi
+6. Jalankan server development:
 
 ```bash
 npm run dev
 ```
 
-Buka browser: `http://localhost:3000`
+Aplikasi sekarang berjalan di `http://localhost:3000`
 
 ---
 
 ## Variabel Lingkungan (.env)
 
-Buat file `.env.local` di root project dengan isi minimal seperti berikut (contoh):
+File `.env` digunakan untuk menyimpan semua konfigurasi rahasia.:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/sistem-pendaftaran-db"
-JWT_SECRET="ganti_dengan_string_acak_yang_kuat"
-EMAIL_USER="email_pengirim@example.com"
-EMAIL_PASS="app_password_or_smtp_password"
+# Koneksi Database (contoh untuk Supabase)
+# PENTING: Gunakan connection string dari "Connection Pooler" dan tambahkan ?pgbouncer=true
+DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST]:6543/postgres?pgbouncer=true"
+
+# Kunci rahasia untuk JWT
+JWT_SECRET="your_strong_random_secret_key"
+
+# Kredensial untuk mengirim email (gunakan App Password dari Gmail)
+EMAIL_USER=yourgmailaccount@gmail.com
+EMAIL_PASS=your_gmail_app_password_without_spaces
 ```
 
 **Catatan penting untuk EMAIL_PASS:**
 
 * Jika memakai Gmail, buat *App Password* (Google Account → Security → App passwords) dan pakai nilai tersebut.
-* Untuk testing lokal yang mudah, gunakan Mailtrap atau layanan SMTP testing.
 
 ---
 
 ## Database & Prisma
 
-Skema Prisma sudah disiapkan di `prisma/schema.prisma`.
+Skema database didefinisikan di `prisma/schema.prisma`.
 
-* Jalankan migrasi: `npx prisma migrate dev --name init`
-* Jalankan Prisma Studio untuk melihat data: `npx prisma studio`
+* Untuk menjalankan migrasi:
+```bash
+npx prisma migrate dev --name init`
+```
+* Untuk melihat dan mengelola data di database secara visual, jalankan:
+```bash
+npx prisma studio
+```
 
 Jika ingin menambah seed data, buat skrip seed sesuai kebutuhan dan jalankan `npx prisma db seed` (jika sudah dikonfigurasi).
 
@@ -141,7 +149,7 @@ Jika ingin menambah seed data, buat skrip seed sesuai kebutuhan dan jalankan `np
 
 ## Script NPM Penting
 
-Beberapa script yang mungkin ada di `package.json`:
+Berikut adalah beberapa perintah yang sering digunakan dalam proyek ini yang mungkin ada di `package.json`:
 
 ```json
 {
@@ -149,9 +157,11 @@ Beberapa script yang mungkin ada di `package.json`:
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "test:backend": "jest --config jest.config.backend.js",
+    "test:e2e": "playwright test"
   }
 }
 ```
@@ -164,7 +174,6 @@ Jika email konfirmasi tidak masuk saat pengujian lokal, lakukan pengecekan:
 
 1. Pastikan `EMAIL_USER` dan `EMAIL_PASS` benar.
 2. Untuk Gmail: aktifkan 2FA dan buat App Password, gunakan App Password itu sebagai `EMAIL_PASS`.
-3. Alternatif: gunakan Mailtrap (mailtrap.io) untuk menangkap email testing.
 
 **Skrip kecil untuk verifikasi transporter (node):**
 
@@ -173,15 +182,20 @@ Buat file `scripts/test-email.js` di root proyek (Node, bukan Next):
 ```js
 // scripts/test-email.js
 const nodemailer = require('nodemailer');
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config();
 
 async function main() {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 
   try {
@@ -201,56 +215,209 @@ Jalankan:
 node scripts/test-email.js
 ```
 
-Jika `SMTP connection OK` → transporter valid.
+Jika `SMTP connection OK` → transporter valid atau koneksi berhasil.
+Jika `Email terkirim: <message-id>` → email terkirim.
+
+📌 **Catatan penting dari hasil uji coba:**
+
+* Tanpa `tls: { rejectUnauthorized: false }` → di environment lokal (Windows + Node.js) TLS handshake gagal dengan error *"self-signed certificate in certificate chain"*.
+* Dengan tambahan `tls: { rejectUnauthorized: false }` → koneksi berhasil dan email terkirim.
+* Ini aman dipakai untuk **testing lokal** 👍.
+* Saat sudah deploy ke Vercel/hosting biasanya **tidak perlu lagi** opsi TLS longgar karena server punya sertifikat CA valid.
 
 ---
 
-## Panduan Deploy Singkat
+## Panduan Deploy Lengkap
+Aplikasi ini di-deploy menggunakan Vercel untuk frontend/API dan Supabase untuk database PostgreSQL.
 
-Saran deploy:
+### 1. Persiapan
+- Pastikan project sudah di-push ke GitHub.
+- Buat akun:
+  - [Vercel](https://vercel.com) → hosting frontend + API
+  - [Supabase](https://supabase.com) → hosting PostgreSQL
+  
+---
 
-* Frontend + API: **Vercel** (Next.js sangat cocok)
-* Database: **Railway** atau **Supabase** (saya menggunakan PostgreSQL)
+### 2. Siapkan Database di Supabase:
+* Buat proyek baru di Supabase dengan:
+1. Tentukan password database (catat baik-baik).
+2. Setelah project dibuat, buka **Project Settings → Database**.
+3. Salin **Connection String** format `DATABASE_URL`: (pakai yang Session pooler) ke `Environtment Variables` di vercel.
 
-Langkah ringkas:
+>PENTING: Tambahkan `?pgbouncer=true` di akhir URL untuk stabilitas koneksi dari Vercel.
 
-1. Push repo ke GitHub.
-2. Daftar di Vercel, hubungkan repo.
-3. Atur environment variables di Vercel sesuai `.env.local`.
-4. Atur database di Railway/Supabase dan update `DATABASE_URL` di Vercel.
-5. Deploy.
+---
 
-> Catatan: Email (Nodemailer) sering diblokir saat dites dari `localhost` oleh penyedia email. Sebaiknya atur App Password (Gmail) atau gunakan layanan SMTP tepercaya saat deploy.
+### 3. Deploy Backend + Frontend di Vercel:
+
+1. Login ke Vercel → **New Project** → Import repository dari GitHub.
+2. Pilih project `sistem-pendaftaran-kelas`.
+3. Atur **Environment Variables** di Vercel:
+- `DATABASE_URL` → isi dengan connection string dari Supabase
+- `JWT_SECRET` → isi string acak (gunakan [randomkeygen.com](https://randomkeygen.com))
+- `EMAIL_USER` → email pengirim (mis. Gmail)
+- `EMAIL_PASS` → App Password Gmail (jangan password asli)
+4. Klik **Deploy**.
+
+> Catatan: Vercel akan otomatis melakukan deploy setiap kali Anda melakukan `git push` ke branch `main`.
+
+---
+
+### 4. Migrasi Database Prisma ke Supabase
+Supaya tabel otomatis dibuat di Supabase:
+
+1. Pastikan `.env` lokal mengarah ke Supabase:
+```env
+DATABASE_URL="postgresql://postgres:<PASSWORD>@db.<HASH>.supabase.co:6543/postgres?pgbouncer=true"
+```
 
 ---
 
 ## Troubleshooting Umum
 
-* **500 / Token invalid** → cek `JWT_SECRET` di env.
-* **Email tidak terkirim** → cek `EMAIL_USER`/`EMAIL_PASS`, gunakan App Password atau Mailtrap.
-* **Prisma P2025 (not found)** → pastikan data exist sebelum update/delete.
-* **Prisma connection error** → cek `DATABASE_URL` dan apakah server Postgres berjalan.
+* Error: `prepared statement "..." already exists`: Ini terjadi karena koneksi antara Prisma & Supabase Pooler. Solusi: Tambahkan `?pgbouncer=true` di akhir `DATABASE_URL` Anda.
+
+* Email Tidak Terkirim di Vercel: Pastikan variabel `EMAIL_USER` dan `EMAIL_PASS` sudah diatur dengan benar di Environment Variables Vercel dan `EMAIL_PASS` adalah App Password (tanpa spasi).
+
+* E2E Test Gagal Login: Pastikan akun yang digunakan untuk tes (`youremail@gmail.com`) benar-benar ada di database Supabase Anda dan memiliki peran (`role`) sebagai `ADMIN`.
 
 ---
 
 ## Kontribusi
 
-Silakan buat branch baru (mis. `feature/xxx` atau `fix/yyy`), commit kecil & buat PR ke `main`.
+Silakan buat branch baru untuk setiap fitur atau perbaikan, lalu ajukan Pull Request (PR) ke main.
 
 Contoh workflow:
 
 ```bash
-git checkout -b feature/readme
+git checkout -b docs/readme
 git add README.md
 git commit -m "docs: add README installation guide"
-git push -u origin feature/readme
+git push -u origin docs/readme
 ```
 
 ---
 
 ## License
 
-Proyek ini dibuat untuk keperluan tugas pada mata kuliah Pemrograman Berbasis Web.  
+Proyek ini dibuat untuk keperluan tugas pada mata kuliah Pemrograman Berbasis Web.
 Hak cipta © 2025 islamicparadigmaathoriq.
 
+---
 
+## ERD / Arsitektur Visual
+
+Berikut adalah Entity Relationship Diagram (ERD) sistem yang digenerasi dari skema Prisma:
+
+![ERD](./prisma/ERD.svg)
+
+**Keterangan simbol:**
+- 🔑 Primary Key  
+- ❓ Kolom opsional (nullable)
+
+---
+
+## Hasil Uji Aksesibilitas Frontend
+
+Pengujian dilakukan dengan **Lighthouse (Chrome DevTools)** pada tab **Accessibility**.  
+Target skor minimal adalah **≥ 80**.
+
+| Halaman                                   | Skor Lighthouse |
+|-------------------------------------------|-----------------|
+| Home / Landing (`app/page.tsx`)           | ✅ 100 |
+| Login (`app/login/page.tsx`)              | ⚠️ 91 |
+| Register (`app/register/page.tsx`)        | ✅ 96 |
+| Dashboard Student (`app/dashboard/page.tsx`)| ✅ 94 |
+| Dashboard Admin (`app/admin/page.tsx`)    | ✅ 95 |
+| Forgot Password (`app/forgot-password/page.tsx`) | ✅ 96 |
+| Reset Password (`app/reset-password/page.tsx`)   | ✅ 96 |
+
+### Catatan Perbaikan yang Sudah Dilakukan
+- Menambahkan atribut `lang="id"` di `<html>`.
+- Menambahkan `<title>` pada setiap halaman.
+- Memberikan `alt` pada semua elemen gambar.
+- Perbaikan kontras warna pada tombol & link.
+- Menambahkan *underline* dan *focus style* pada link/tombol untuk navigasi keyboard.
+- Uji manual navigasi dengan keyboard (`Tab`, `Enter`, `Space`) → hasil **sesuai** (tidak ada *focus trap*, urutan logis).
+
+---
+
+## Menjalankan Pengujian (Testing)
+
+### 1. Unit Test (Backend API)
+
+Tes ini akan memverifikasi logika API secara terisolasi tanpa memerlukan database asli.
+
+```bash
+npm run test:backend
+```
+
+### 2. End-to-End Test (Alur Pengguna)
+
+Tes ini akan menjalankan "robot" yang mensimulasikan interaksi pengguna nyata di browser (login, klik, dll).
+
+```bash
+npm run test:e2e
+```
+
+Untuk melihat laporan visual hasil E2E test, jalankan:
+
+```bash
+npx playwright show-report
+```
+
+## Catatan Perkembangan
+
+📌 **Status saat ini**:
+
+* Aplikasi telah berhasil di-deploy ke Vercel dan berfungsi penuh secara online.
+
+* Semua fitur inti untuk Admin dan Siswa telah selesai diimplementasikan dan diuji secara manual.
+
+* Fitur bonus seperti notifikasi email untuk reset password dan konfirmasi pendaftaran telah berhasil diimplementasikan.
+
+* Unit test (`Jest`) untuk API backend telah dibuat dan berhasil dijalankan.
+
+* E2E test (`Playwright`) telah disiapkan, hanya menunggu penyelesaian masalah data untuk bisa berjalan PASS.
+
+* Seluruh dokumen pendukung (`API Spec`, `ERD`, `Panduan Deploy`) telah diselesaikan.
+
+📌 **Target berikutnya agar tugas selesai**:
+
+1. Membuat **video demo aplikasi**.
+2. Menambahkan **unit test & E2E test minimal**.
+3. (Opsional bonus) Implementasi role granular & dashboard analitik.
+
+---
+
+## Tabel Progres Proyek
+
+| Aspek Penilaian          | Detail Tugas                              | Status |
+|---------------------------|-------------------------------------------|--------|
+| **Kelengkapan Fitur**     | Register & Login dengan JWT                | ✅     |
+|                           | CRUD Kelas untuk Admin (Create, Read, Update, Delete) | ✅ |
+|                           | Student bisa melihat daftar kelas + sisa kuota | ✅ |
+|                           | Student bisa mendaftar kelas (kuota real-time) | ✅ |
+|                           | Admin bisa melihat daftar peserta per kelas | ✅ |
+| **Desain & UX**           | Navigasi jelas, responsif                 | ✅     |
+|                           | Aksesibilitas dasar (Lighthouse ≥ 91)     | ✅     |
+| **Kode Backend**          | Struktur modular API Routes               | ✅     |
+|                           | Validasi input & error handling           | ✅     |
+|                           | Middleware JWT + role-based               | ✅     |
+|                           | Keamanan dasar (hashed password, JWT secret, .env) | ✅ |
+| **Kode Frontend**         | State handling (React hooks)              | ✅     |
+|                           | Komponen reusable (Popup, API helper)     | ✅     |
+|                           | Error handling di form & dashboard        | ✅     |
+| **Testing**               | Unit test / E2E test minimal              | 	🔄     |
+| **Dokumentasi**           | README proyek                             | ✅     |
+|                           | API Spec (API_SPEC.md)                    | ✅     |
+|                           | ERD / Arsitektur Visual                   | ✅     |
+|                           | Panduan Deploy                            | ✅     |
+| **Deployment & Demo**     | Deploy aplikasi online (Vercel + DB)      | ✅     |
+|                           | Video demo aplikasi                       | ❌     |
+| **Git Hygiene**           | Commit kecil bermakna, branching, PR/issues | 🔄 (sudah latihan, belum konsisten) |
+| **Bonus (opsional)**      | Notifikasi email saat sukses daftar       | ✅     |
+|                           | Role & izin granular (Admin/Staff)        | 🔄 (baru Admin & Student) |
+|                           | Dashboard analitik                        | ❌     |
+
+---
