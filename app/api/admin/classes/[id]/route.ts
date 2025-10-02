@@ -96,5 +96,5 @@ const deleteClass = async (
 };
 
 // ✅ ADMIN only lewat middleware
-export const PUT = authMiddleware(updateClass, ["ADMIN"]); // // sama seperti sebelumnya
-export const DELETE = authMiddleware(deleteClass, ["ADMIN"]); // // sama seperti sebelumnya
+export const PUT = authMiddleware(updateClass, ["ADMIN", "STAFF"]); // // sama seperti sebelumnya
+export const DELETE = authMiddleware(deleteClass, ["ADMIN", "STAFF"]); // // sama seperti sebelumnya

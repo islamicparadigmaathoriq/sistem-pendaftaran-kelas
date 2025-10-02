@@ -57,5 +57,5 @@ const getClasses = async (req: Request) => {
 };
 
 // Export the API routes with the authentication middleware
-export const POST = authMiddleware(createClass, ['ADMIN']);
-export const GET = authMiddleware(getClasses, ['ADMIN']);
+export const POST = authMiddleware(createClass, ['ADMIN', 'STAFF']);
+export const GET = authMiddleware(getClasses, ['ADMIN', 'STAFF']);
