@@ -48,4 +48,5 @@ model Registration {
 enum Role {
   ADMIN
   STUDENT
+  STAFF
 }
