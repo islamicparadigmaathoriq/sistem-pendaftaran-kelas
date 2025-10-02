@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiGet, apiPost, apiDelete, apiFetch } from '@/lib/api';
 import Image from 'next/image';
-import Link from 'next/link';
 import SuccessPopup from '@/components/SuccessPopup';
+import AnalyticsChart from '@/components/admin/AnalyticsChart';
 
 interface Class {
   id: string;
@@ -47,7 +47,6 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   const bgImageSrc = "/background.jpg";
-  const smallLogoSrc = "/digio-small-logo.png";
 
   const fetchClasses = async () => {
     try {
@@ -247,73 +246,80 @@ export default function AdminDashboard() {
           </div>
         </nav>
 
-        {/* Dynamic Content Area */}
-        <main className="container mx-auto p-8">
-          {currentView === 'classes' ? (
-            <div className="rounded-lg bg-white bg-opacity-80 p-6 shadow-xl backdrop-blur-md">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Daftar Kelas</h2>
-                <button
-                  onClick={handleOpenClassModal}
-                  className="rounded-md bg-green-500 px-4 py-2 font-semibold text-white transition hover:bg-green-600"
-                >
-                  Tambah Kelas Baru
-                </button>
-              </div>
-              <div className="overflow-x-auto rounded-md shadow-md">
-                <table className="min-w-full bg-white">
-                  <thead className="bg-gray-200">
-                    <tr>
-                      <th className="py-3 px-4 text-left font-semibold">Nama Kelas</th>
-                      <th className="py-3 px-4 text-left font-semibold">Kuota</th>
-                      <th className="py-3 px-4 text-left font-semibold">Tersedia</th>
-                      <th className="py-3 px-4 text-left font-semibold">Tanggal Mulai Pelatihan</th>
-                      <th className="py-3 px-4 text-left font-semibold">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {classes.map((cls) => (
-                      <tr key={cls.id} className="border-b transition hover:bg-gray-50">
-                        <td className="py-3 px-4">{cls.name}</td>
-                        <td className="py-3 px-4">{cls.quota}</td>
-                        <td className="py-3 px-4">{cls.available}</td>
-                        <td className="py-3 px-4">{cls.trainingDate ? new Date(cls.trainingDate).toLocaleDateString() : 'N/A'}</td>
-                        <td className="flex space-x-2 py-3 px-4">
-                          <button
-                            onClick={() => handleEdit(cls)}
-                            className="rounded-md bg-yellow-500 px-3 py-1 text-sm text-white transition hover:bg-yellow-600"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(cls.id)}
-                            className="rounded-md bg-red-500 px-3 py-1 text-sm text-white transition hover:bg-red-600"
-                          >
-                            Hapus
-                          </button>
-                          <button
-                            onClick={() => fetchParticipants(cls.id)}
-                            className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white transition hover:bg-blue-600"
-                          >
-                            Lihat Peserta
-                          </button>
-                        </td>
+        {/* Dynamic Content Area with Grid Layout */}
+        <main className="container mx-auto p-8 grid grid-cols-3 gap-6">
+          {/* Kolom kiri: Daftar Kelas */}
+          <div className="col-span-2 rounded-lg bg-white bg-opacity-80 p-6 shadow-xl backdrop-blur-md">
+            {currentView === 'classes' ? (
+              <div>
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-2xl font-bold">Daftar Kelas</h2>
+                  <button
+                    onClick={handleOpenClassModal}
+                    className="rounded-md bg-green-500 px-4 py-2 font-semibold text-white transition hover:bg-green-600"
+                  >
+                    Tambah Kelas Baru
+                  </button>
+                </div>
+                <div className="overflow-x-auto rounded-md shadow-md">
+                  <table className="min-w-full bg-white">
+                    <thead className="bg-gray-200">
+                      <tr>
+                        <th className="py-3 px-4 text-left font-semibold">Nama Kelas</th>
+                        <th className="py-3 px-4 text-left font-semibold">Kuota</th>
+                        <th className="py-3 px-4 text-left font-semibold">Tersedia</th>
+                        <th className="py-3 px-4 text-left font-semibold">Tanggal Mulai Pelatihan</th>
+                        <th className="py-3 px-4 text-left font-semibold">Aksi</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {classes.map((cls) => (
+                        <tr key={cls.id} className="border-b transition hover:bg-gray-50">
+                          <td className="py-3 px-4">{cls.name}</td>
+                          <td className="py-3 px-4">{cls.quota}</td>
+                          <td className="py-3 px-4">{cls.available}</td>
+                          <td className="py-3 px-4">{cls.trainingDate ? new Date(cls.trainingDate).toLocaleDateString() : 'N/A'}</td>
+                          <td className="flex space-x-2 py-3 px-4">
+                            <button
+                              onClick={() => handleEdit(cls)}
+                              className="rounded-md bg-yellow-500 px-3 py-1 text-sm text-white transition hover:bg-yellow-600"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(cls.id)}
+                              className="rounded-md bg-red-500 px-3 py-1 text-sm text-white transition hover:bg-red-600"
+                            >
+                              Hapus
+                            </button>
+                            <button
+                              onClick={() => fetchParticipants(cls.id)}
+                              className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white transition hover:bg-blue-600"
+                            >
+                              Lihat Peserta
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="rounded-lg bg-white bg-opacity-80 p-6 shadow-xl backdrop-blur-md">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Daftar Semua Peserta</h2>
+            ) : (
+              <div>
+                <h2 className="text-2xl font-bold mb-6">Daftar Semua Peserta</h2>
+                <p>Fitur ini masih dalam pengembangan. Silakan klik 'Lihat Peserta' pada kelas tertentu.</p>
               </div>
-              <p>Fitur ini masih dalam pengembangan. Silakan klik 'Lihat Peserta' pada kelas tertentu.</p>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Kolom kanan: Dashboard Analitik */}
+          <div className="col-span-1 rounded-lg bg-white p-6 shadow-xl backdrop-blur-md">
+            <h2 className="text-2xl font-bold mb-6">Dashboard Analitik</h2>
+            <AnalyticsChart />
+          </div>
         </main>
-        
+
         {/* Modal untuk Tambah/Edit Kelas */}
         {isClassModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-sm">
@@ -383,7 +389,7 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
-        
+
         {/* Modal untuk Daftar Peserta */}
         {isParticipantsModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-sm">
