@@ -11,8 +11,7 @@ Endpoint yang berhubungan dengan registrasi, login, dan manajemen profil penggun
 
 ### POST /api/auth/register
 
-**Deskripsi**: Mendaftarkan pengguna baru dengan role default `STUDENT`.  
-Password akan di-*hash* sebelum disimpan.
+**Deskripsi**: Mendaftarkan pengguna baru dengan role default `STUDENT`. Password akan di-*hash* sebelum disimpan.
 - **Authorization**: ❌ Tidak memerlukan token.
 - **Request Body**:
   ```json
@@ -72,7 +71,7 @@ Password akan di-*hash* sebelum disimpan.
 
 ### POST /api/auth/forgot-password
 
-- **Deskripsi**: Memulai proses lupa password. API akan membuat token reset dan menyimpannya di database.
+- **Deskripsi**: Memulai proses lupa password dan mengirim email berisi link reset.
 - **Authorization**: ❌ Tidak memerlukan token.
 - **Request Body**:
   ```json
@@ -129,14 +128,15 @@ Password akan di-*hash* sebelum disimpan.
   ```
 ---
 
-## 2. Admin
+## 2. Admin & Staff
 
-Endpoint yang hanya bisa diakses oleh pengguna dengan role **ADMIN**. 
+Endpoint yang hanya bisa diakses oleh pengguna dengan role **ADMIN** atau **STAFF**. 
 Semua endpoint di bagian ini memerlukan Bearer Token.
 
 ### GET /api/admin/classes
 
 - **Deskripsi**: Mengambil daftar semua kelas yang ada.
+- **Authorization**: ✅ Bearer Token Dibutuhkan (Role: `ADMIN`, `STAFF`).
 - **Success Response (200 OK)**:
   ```json
   [
@@ -150,10 +150,12 @@ Semua endpoint di bagian ini memerlukan Bearer Token.
     }
   ]
   ```
+---
 
 ### POST /api/admin/classes
 
 - **Deskripsi**: Membuat kelas baru. Kuota available akan otomatis diisi sama dengan quota.
+- **Authorization**: ✅ Bearer Token Dibutuhkan (Role: `ADMIN`, `STAFF`).
 - **Request Body**:
   ```json
   {
@@ -163,11 +165,13 @@ Semua endpoint di bagian ini memerlukan Bearer Token.
   "trainingDate": "2025-10-24"
   }
   ```
-- **Success Response (201 Created)**: return data kelas
+- **Success Response (201 Created)**: Mengembalikan data kelas yang baru dibuat.
+---
 
 ### PUT /api/admin/classes/[id]
 
 - **Deskripsi**: Memperbarui data kelas berdasarkan ID-nya.
+- **Authorization**: ✅ Bearer Token Dibutuhkan (Role: `ADMIN`, `STAFF`).
 - **Request Body**:
   ```json
   {
@@ -178,10 +182,12 @@ Semua endpoint di bagian ini memerlukan Bearer Token.
   }
   ```
 - **Success Response (200 OK)**: Mengembalikan data kelas yang sudah diperbarui.
+---
 
 ### DELETE /api/admin/classes/[id]
 
 - **Deskripsi**: Menghapus data kelas berdasarkan ID-nya.
+- **Authorization**: ✅ Bearer Token Dibutuhkan (Role: `ADMIN`, `STAFF`).
 - **Success Response (200 OK)**:
   ```json
   {
@@ -194,10 +200,12 @@ Semua endpoint di bagian ini memerlukan Bearer Token.
     "message": "Cannot delete class with existing registrations."
   }
   ```
+---
 
 ### GET /api/admin/registrations/[classId]
 
 - **Deskripsi**: Melihat daftar peserta di sebuah kelas.
+- **Authorization**: ✅ Bearer Token Dibutuhkan (Role: `ADMIN`, `STAFF`).
 - **Success Response (200 OK)**:
   ```json
   [
@@ -214,7 +222,19 @@ Semua endpoint di bagian ini memerlukan Bearer Token.
     }
   ]
   ```
+---
 
+### GET /api/admin/analytics
+
+- **Deskripsi**: Mengambil data agregat untuk analitik pendaftaran harian.
+- **Authorization**: ✅ Bearer Token Dibutuhkan (Role: `ADMIN`, `STAFF`).
+- **Success Response (200)**:
+  ```json
+  {
+    "labels": ["2025-10-01", "2025-10-02"],
+    "data": [5, 12]
+  }
+  ```
 ---
 
 ## 3. Student
@@ -223,7 +243,7 @@ Endpoint yang digunakan oleh siswa untuk berinteraksi dengan kelas. Semua endpoi
 
 ### GET /api/classes
 
-- **Deskripsi**: Mengambil daftar semua kelas yang tersedia untuk siswa. Setiap kelas memiliki properti tambahan isRegistered untuk menandakan apakah siswa tersebut sudah mendaftar.
+- **Deskripsi**: Mengambil daftar semua kelas yang tersedia untuk siswa. Setiap kelas memiliki properti tambahan `isRegistered` untuk menandakan apakah siswa tersebut sudah mendaftar.
 - **Success Response (200 OK)**:
   ```json
   [
@@ -238,6 +258,7 @@ Endpoint yang digunakan oleh siswa untuk berinteraksi dengan kelas. Semua endpoi
     }
   ]
   ```
+---
 
 ### POST /api/register/class
 
@@ -276,25 +297,28 @@ Endpoint yang digunakan oleh siswa untuk berinteraksi dengan kelas. Semua endpoi
 ---
 
 ## 4. Middleware & Catatan Teknis
-Semua endpoint yang memerlukan autentikasi menggunakan **JWT**.  
-Token dikirim melalui header:
+Semua endpoint yang memerlukan autentikasi menggunakan **JWT**. Token dikirim melalui header `Authorization: Bearer <token>`.
 
+---
 
 ### Aturan Role
-- `role = ADMIN` → hanya bisa mengakses endpoint `/api/admin/**`
+- `role = ADMIN` atau `role = STAFF` → bisa mengakses semua endpoint yang diawali `/api/admin/**`.
 - `role = STUDENT` → bisa mengakses endpoint `/api/classes` dan `/api/register/class`
-- Semua role → bisa mengakses `/api/me`
+
+---
 
 ### Error Handling
-- **401 Unauthorized** → Jika token tidak ada, tidak valid, atau kedaluwarsa.  
-- **403 Forbidden** → Jika role pengguna tidak sesuai dengan role yang diperlukan.
+- **401 Unauthorized**: Terjadi jika token tidak ada, tidak valid, atau kedaluwarsa.  
+- **403 Forbidden**: Terjadi jika peran pengguna tidak sesuai dengan yang diizinkan oleh endpoint.
+
+---
 
 ### Teknologi yang Digunakan
-- **JWT (jsonwebtoken)** → digunakan untuk autentikasi & otorisasi. Token dikirim via header `Authorization: Bearer <token>`.
-- **bcryptjs** → digunakan untuk hashing password. 
-- **Prisma ORM** → digunakan untuk komunikasi database (PostgreSQL). 
-- **Nodemailer** → dipakai untuk mengirim email konfirmasi & reset password.  
-- **auth.ts** → middleware untuk memverifikasi JWT & role sebelum akses endpoint
+- **JWT (jsonwebtoken)**: Untuk autentikasi & otorisasi.
+- **bcryptjs**: Untuk hashing password. 
+- **Prisma ORM**: Untuk komunikasi database (PostgreSQL). 
+- **Nodemailer**: Untuk mengirim email konfirmasi & reset password.  
+- **auth.ts**: Middleware kustom untuk memverifikasi JWT & peran sebelum handler API dieksekusi.
 
 ---
 
@@ -306,72 +330,41 @@ Selain endpoint API, sistem ini menggunakan beberapa komponen backend untuk meng
 
 - **Fungsi**: Helper untuk komunikasi frontend ↔ backend API.
 - **Keterangan**: Menyediakan fungsi wrapper `apiGet`, `apiPost`, `apiPut`, `apiDelete` menggunakan `fetch`.  
-  Secara otomatis menambahkan header Authorization jika token tersedia.
-- **Contoh**:
-  ```ts
-  export async function apiGet(url: string, token?: string) {
-    const res = await fetch(url, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-    return res.json();
-  }
-  ```
+  Secara otomatis menambahkan header `Authorization` jika token tersedia DI `localStorage`.
+
 ---
 
 ### 5.2 lib/db.ts
 
-- **Fungsi**: Inisialisasi PrismaClient untuk mengakses database PostgreSQL.
-- **Keterangan**: Singleton pattern dipakai agar Prisma tidak membuat koneksi ganda di mode development.
-- **Contoh**:
-  ```ts
-  import { PrismaClient } from '@prisma/client';
-  const globalForPrisma = global as unknown as { prisma: PrismaClient };
-  export const prisma =
-    globalForPrisma.prisma || new PrismaClient();
-  if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
-  ```
+- **Fungsi**: Inisialisasi `PrismaClient` untuk mengakses database PostgreSQL.
+- **Keterangan**: Menggunakan pola singleton untuk mencegah pembuatan koneksi ganda di lingkungan development.
+
 ---
 
 ### 5.3 lib/email.ts
 
-- **Fungsi**: Mengirim email (reset password, notifikasi pendaftaran).
-- **Keterangan**: Menggunakan Nodemailer dengan kredensial dari .env.
-- **Contoh**:
-  ```ts
-  import nodemailer from 'nodemailer';
-  export const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-  export async function sendPasswordReset(email: string, token: string) {
-    const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Reset Password',
-      text: `Klik link berikut untuk reset password: ${resetUrl}`,
-    });
-  }
-  ```
+- **Fungsi**: Mengirim email transaksional (reset password, notifikasi pendaftaran).
+- **Keterangan**: Menggunakan `Nodemailer` dengan kredensial dari `.env`. Terdapat fungsi `sendPasswordResetEmail` dan `sendRegistrationEmail`.
+
 ---
 
 ### 5.4 prisma/schema.prisma
 
 - **Fungsi**: Mendefinisikan skema database dengan Prisma ORM.
-- **Keterangan**: Terdiri dari model User, Class, dan Registration.
+- **Keterangan**: erdiri dari model `User`, `Class`, dan `Registration` serta `enum Role`.
 - **Contoh**:
   ```prisma
-  model User {
-    id        String   @id @default(uuid())
-    name      String
-    email     String   @unique
-    password  String
-    role      String   @default("STUDENT")
-    createdAt DateTime @default(now())
-    registrations Registration[]
+    model User {
+    id               String     @id @default(uuid())
+    email            String     @unique
+    password         String
+    name             String?
+    role             Role       @default(STUDENT)
+    profilePicture   String?
+    createdAt        DateTime   @default(now())
+    resetToken       String?
+    resetTokenExpiry DateTime?
+    registrations    Registration[]
   }
   model Class {
     id           String   @id @default(uuid())
@@ -387,22 +380,29 @@ Selain endpoint API, sistem ini menggunakan beberapa komponen backend untuk meng
     userId    String
     classId   String
     createdAt DateTime @default(now())
-    user  User  @relation(fields: [userId], references: [id])
-    class Class @relation(fields: [classId], references: [id])
+    user      User     @relation(fields: [userId], references: [id])
+    class     Class    @relation(fields: [classId], references: [id])
+
+    @@unique([userId, classId])
+  }
+
+  enum Role {
+    ADMIN
+    STUDENT
+    STAFF
   }
   ```
 ---
 
 ### 5.5 .env
 
-- **Fungsi**: Menyimpan variabel konfigurasi aplikasi.
-- **Keterangan**: File ini tidak boleh dipublikasikan ke repository umum.
-- **Contoh**:
+- **Fungsi**: Menyimpan variabel konfigurasi aplikasi yang bersifat rahasia.
+- **Keterangan**: File ini tidak boleh dipublikasikan ke repositori. Gunakan `.env.example` sebagai template.
+- **Contoh untuk Produksi (Vercel + Supabase)**:
   ```env
-  DATABASE_URL="postgresql://user:password@localhost:5432/db_name"
+  DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST]:6543/postgres?pgbouncer=true"
   JWT_SECRET="super_secret_key"
   EMAIL_USER="youremail@gmail.com"
-  EMAIL_PASS="app_password_email"
-  APP_URL="http://localhost:3000"
+  EMAIL_PASS="your_gmail_app_password"
   ```
 ---

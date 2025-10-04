@@ -18,27 +18,26 @@ Aplikasi Live: https://sistem-pendaftaran-kelas.vercel.app/
 5. [Variabel Lingkungan (.env)](#variabel-lingkungan-env)
 6. [Database & Prisma](#database--prisma)
 7. [Script NPM Penting](#script-npm-penting)
-8. [Testing Email (debugging nodemailer)](#testing-email-debugging-nodemailer)
+8. [Menjalankan Pengujian (Testing)](#Menjalankan-Pengujian-Testing)
 9. [Panduan Deploy Lengkap](#panduan-deploy-lengkap)
 10. [Troubleshooting umum](#troubleshooting-umum)
 11. [Kontribusi](#kontribusi)
 12. [License](#license)
 13. [ERD / Arsitektur Visual](#erd--arsitektur-visual)
 14. [Hasil Uji Aksesibilitas Frontend](#Hasil-Uji-Aksesibilitas-Frontend)
-15. [Menjalankan Pengujian / Testing](#Menjalankan-Pengujian--Testing)
-16. [Catatan Perkembangan](#catatan-perkembangan)
-17. [Tabel Progres Proyek](#Tabel-Progres-Proyek)
+15. [Tabel Progres Proyek](#Tabel-Progres-Proyek)
 
 ---
 
 ## Fitur Utama
 
-* Registrasi & Login berbasis JWT.
-* Manajemen Kelas (CRUD) oleh Admin.
+* Registrasi & Login berbasis `JWT`.
+* Manajemen Kelas (CRUD) oleh `Admin` dan `Staff`.
 * Tampilan daftar kelas beserta sisa kuota untuk Siswa.
 * Pendaftaran kelas dengan kuota real-time (transaksi atomik dengan Prisma).
 * Fitur Lupa & Reset Password.
 * Notifikasi email otomatis (Nodemailer) untuk konfirmasi pendaftaran dan reset password.
+* `Bonus`: Dashboard analitik sederhana untuk admin dan Staff.
 
 ---
 
@@ -50,12 +49,11 @@ Aplikasi Live: https://sistem-pendaftaran-kelas.vercel.app/
 * Email: `Nodemailer` dengan Gmail App Password
 * Database: PostgreSQL
 * Testing: `Jest` untuk Unit Test (Backend), `Playwright` untuk E2E Test (Frontend)
+* Visualisasi: `Chart.js`
 
 ---
 
 ## Prasyarat
-
-Pastikan perangkat lokal ini sudah terinstal:
 
 * Node.js (v18+ direkomendasikan)
 * npm (atau yarn/pnpm)
@@ -124,26 +122,22 @@ EMAIL_USER=yourgmailaccount@gmail.com
 EMAIL_PASS=your_gmail_app_password_without_spaces
 ```
 
-**Catatan penting untuk EMAIL_PASS:**
-
-* Jika memakai Gmail, buat *App Password* (Google Account → Security → App passwords) dan pakai nilai tersebut.
+Catatan: Untuk `EMAIL_PASS`, gunakan App Password dari Google jika memakai Gmail, dan tulis tanpa spasi.
 
 ---
 
 ## Database & Prisma
 
-Skema database didefinisikan di `prisma/schema.prisma`.
-
+*Skema database didefinisikan di `prisma/schema.prisma`.
 * Untuk menjalankan migrasi:
 ```bash
-npx prisma migrate dev --name init`
+npx prisma migrate dev
 ```
 * Untuk melihat dan mengelola data di database secara visual, jalankan:
 ```bash
 npx prisma studio
 ```
-
-Jika ingin menambah seed data, buat skrip seed sesuai kebutuhan dan jalankan `npx prisma db seed` (jika sudah dikonfigurasi).
+* Jika ingin menambah seed data, buat skrip seed sesuai kebutuhan dan jalankan `npx prisma db seed` (jika sudah dikonfigurasi).
 
 ---
 
@@ -168,63 +162,26 @@ Berikut adalah beberapa perintah yang sering digunakan dalam proyek ini yang mun
 
 ---
 
-## Testing Email (debugging nodemailer)
+## Menjalankan Pengujian (Testing)
 
-Jika email konfirmasi tidak masuk saat pengujian lokal, lakukan pengecekan:
+Proyek ini dilengkapi dengan pengujian otomatis minimal sesuai persyaratan.
 
-1. Pastikan `EMAIL_USER` dan `EMAIL_PASS` benar.
-2. Untuk Gmail: aktifkan 2FA dan buat App Password, gunakan App Password itu sebagai `EMAIL_PASS`.
-
-**Skrip kecil untuk verifikasi transporter (node):**
-
-Buat file `scripts/test-email.js` di root proyek (Node, bukan Next):
-
-```js
-// scripts/test-email.js
-const nodemailer = require('nodemailer');
-require('dotenv').config();
-
-async function main() {
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
-
-  try {
-    await transporter.verify();
-    console.log('SMTP connection OK');
-  } catch (err) {
-    console.error('SMTP connection ERROR', err);
-  }
-}
-
-main();
-```
-
-Jalankan:
-
+### 1. Unit Test (Backend API)
+Tes ini memverifikasi logika API secara terisolasi menggunakan `Jest`.
 ```bash
-node scripts/test-email.js
+npm run test:backend
 ```
+---
 
-Jika `SMTP connection OK` → transporter valid atau koneksi berhasil.
-Jika `Email terkirim: <message-id>` → email terkirim.
-
-📌 **Catatan penting dari hasil uji coba:**
-
-* Tanpa `tls: { rejectUnauthorized: false }` → di environment lokal (Windows + Node.js) TLS handshake gagal dengan error *"self-signed certificate in certificate chain"*.
-* Dengan tambahan `tls: { rejectUnauthorized: false }` → koneksi berhasil dan email terkirim.
-* Ini aman dipakai untuk **testing lokal** 👍.
-* Saat sudah deploy ke Vercel/hosting biasanya **tidak perlu lagi** opsi TLS longgar karena server punya sertifikat CA valid.
-
+### 2. End-to-End Test (Alur Pengguna)
+Tes ini menjalankan "robot" (`Playwright`) yang mensimulasikan alur login admin di browser. Pastikan server tidak sedang berjalan di terminal lain saat menjalankan perintah ini.
+```bash
+npm run test:e2e
+```
+Untuk melihat laporan visual hasil E2E test, jalankan:
+```bash
+npx playwright show-report
+```
 ---
 
 ## Panduan Deploy Lengkap
@@ -242,7 +199,7 @@ Aplikasi ini di-deploy menggunakan Vercel untuk frontend/API dan Supabase untuk 
 * Buat proyek baru di Supabase dengan:
 1. Tentukan password database (catat baik-baik).
 2. Setelah project dibuat, buka **Project Settings → Database**.
-3. Salin **Connection String** format `DATABASE_URL`: (pakai yang Session pooler) ke `Environtment Variables` di vercel.
+3. Salin **Connection String** format `DATABASE_URL`: (pakai yang `transaction pooler`) ke `Environtment Variables` di vercel.
 
 >PENTING: Tambahkan `?pgbouncer=true` di akhir URL untuk stabilitas koneksi dari Vercel.
 
@@ -270,31 +227,23 @@ Supaya tabel otomatis dibuat di Supabase:
 ```env
 DATABASE_URL="postgresql://postgres:<PASSWORD>@db.<HASH>.supabase.co:6543/postgres?pgbouncer=true"
 ```
+2. Jalankan `npx prisma migrate deploy` dari komputermu (dengan `.env` menunjuk ke Supabase) untuk membuat tabel.
 
 ---
 
 ## Troubleshooting Umum
 
-* Error: `prepared statement "..." already exists`: Ini terjadi karena koneksi antara Prisma & Supabase Pooler. Solusi: Tambahkan `?pgbouncer=true` di akhir `DATABASE_URL` Anda.
+* **Error**: `prepared statement "..." already exists`: Solusi: Tambahkan `?pgbouncer=true` di akhir `DATABASE_URL` Anda.
 
-* Email Tidak Terkirim di Vercel: Pastikan variabel `EMAIL_USER` dan `EMAIL_PASS` sudah diatur dengan benar di Environment Variables Vercel dan `EMAIL_PASS` adalah App Password (tanpa spasi).
+* **Email Tidak Terkirim di Vercel**: Pastikan `EMAIL_USER` dan `EMAIL_PASS` (App Password tanpa spasi) sudah benar di Environment Variables Vercel.
 
-* E2E Test Gagal Login: Pastikan akun yang digunakan untuk tes (`youremail@gmail.com`) benar-benar ada di database Supabase Anda dan memiliki peran (`role`) sebagai `ADMIN`.
+E2E Test Gagal: Pastikan file `.env` sudah ada dan terisi dengan benar. Pastikan juga akun yang digunakan untuk tes ada di database, perannya `ADMIN`, dan kredensialnya cocok.
 
 ---
 
 ## Kontribusi
 
-Silakan buat branch baru untuk setiap fitur atau perbaikan, lalu ajukan Pull Request (PR) ke main.
-
-Contoh workflow:
-
-```bash
-git checkout -b docs/readme
-git add README.md
-git commit -m "docs: add README installation guide"
-git push -u origin docs/readme
-```
+Gunakan alur feature branch dan ajukan Pull Request (PR) ke `main`.
 
 ---
 
@@ -307,20 +256,27 @@ Hak cipta © 2025 islamicparadigmaathoriq.
 
 ## ERD / Arsitektur Visual
 
-Berikut adalah Entity Relationship Diagram (ERD) sistem yang digenerasi dari skema Prisma:
+Berikut adalah Entity Relationship Diagram (ERD) sistem yang digenerasi dari supabase schema:
 
 ![ERD](./prisma/ERD.svg)
 
 **Keterangan simbol:**
-- 🔑 Primary Key  
-- ❓ Kolom opsional (nullable)
+
+| Simbol | Arti |
+| :---: | :--- |
+| 🔑 | **Primary key** |
+| # | **Identity** |
+| 👆 | **Unique** |
+| ◇ | **Nullable** |
+| ◆ | **Non-Nullable** |
 
 ---
 
 ## Hasil Uji Aksesibilitas Frontend
 
-Pengujian dilakukan dengan **Lighthouse (Chrome DevTools)** pada tab **Accessibility**.  
+Pengujian dengan **Lighthouse (Chrome DevTools)** pada tab **Accessibility** menunjukkan semua halaman utama memperoleh skor di atas 90, memenuhi standar aksesibilitas dasar.  
 Target skor minimal adalah **≥ 80**.
+
 
 | Halaman                                   | Skor Lighthouse |
 |-------------------------------------------|-----------------|
@@ -332,63 +288,8 @@ Target skor minimal adalah **≥ 80**.
 | Forgot Password (`app/forgot-password/page.tsx`) | ✅ 96 |
 | Reset Password (`app/reset-password/page.tsx`)   | ✅ 96 |
 
-### Catatan Perbaikan yang Sudah Dilakukan
-- Menambahkan atribut `lang="id"` di `<html>`.
-- Menambahkan `<title>` pada setiap halaman.
-- Memberikan `alt` pada semua elemen gambar.
-- Perbaikan kontras warna pada tombol & link.
-- Menambahkan *underline* dan *focus style* pada link/tombol untuk navigasi keyboard.
-- Uji manual navigasi dengan keyboard (`Tab`, `Enter`, `Space`) → hasil **sesuai** (tidak ada *focus trap*, urutan logis).
-
 ---
 
-## Menjalankan Pengujian (Testing)
-
-### 1. Unit Test (Backend API)
-
-Tes ini akan memverifikasi logika API secara terisolasi tanpa memerlukan database asli.
-
-```bash
-npm run test:backend
-```
-
-### 2. End-to-End Test (Alur Pengguna)
-
-Tes ini akan menjalankan "robot" yang mensimulasikan interaksi pengguna nyata di browser (login, klik, dll).
-
-```bash
-npm run test:e2e
-```
-
-Untuk melihat laporan visual hasil E2E test, jalankan:
-
-```bash
-npx playwright show-report
-```
-
-## Catatan Perkembangan
-
-📌 **Status saat ini**:
-
-* Aplikasi telah berhasil di-deploy ke Vercel dan berfungsi penuh secara online.
-
-* Semua fitur inti untuk Admin dan Siswa telah selesai diimplementasikan dan diuji secara manual.
-
-* Fitur bonus seperti notifikasi email untuk reset password dan konfirmasi pendaftaran telah berhasil diimplementasikan.
-
-* Unit test (`Jest`) untuk API backend telah dibuat dan berhasil dijalankan.
-
-* E2E test (`Playwright`) telah disiapkan, hanya menunggu penyelesaian masalah data untuk bisa berjalan PASS.
-
-* Seluruh dokumen pendukung (`API Spec`, `ERD`, `Panduan Deploy`) telah diselesaikan.
-
-📌 **Target berikutnya agar tugas selesai**:
-
-1. Membuat **video demo aplikasi**.
-2. Menambahkan **unit test & E2E test minimal**.
-3. (Opsional bonus) Implementasi role granular & dashboard analitik.
-
----
 
 ## Tabel Progres Proyek
 
@@ -408,16 +309,17 @@ npx playwright show-report
 | **Kode Frontend**         | State handling (React hooks)              | ✅     |
 |                           | Komponen reusable (Popup, API helper)     | ✅     |
 |                           | Error handling di form & dashboard        | ✅     |
-| **Testing**               | Unit test / E2E test minimal              | 	🔄     |
+| **Testing**               | Unit test / E2E test minimal              | ✅     |
 | **Dokumentasi**           | README proyek                             | ✅     |
 |                           | API Spec (API_SPEC.md)                    | ✅     |
 |                           | ERD / Arsitektur Visual                   | ✅     |
 |                           | Panduan Deploy                            | ✅     |
 | **Deployment & Demo**     | Deploy aplikasi online (Vercel + DB)      | ✅     |
-|                           | Video demo aplikasi                       | ❌     |
-| **Git Hygiene**           | Commit kecil bermakna, branching, PR/issues | 🔄 (sudah latihan, belum konsisten) |
+|                           | Video demo aplikasi                       | ✅     |
+| **Git Hygiene**           | Commit kecil bermakna, branching, PR/issues | ✅     |
 | **Bonus (opsional)**      | Notifikasi email saat sukses daftar       | ✅     |
-|                           | Role & izin granular (Admin/Staff)        | 🔄 (baru Admin & Student) |
-|                           | Dashboard analitik                        | ❌     |
+|                           | Role & izin granular (Admin/Staff)        | ✅     |
+|                           | Dashboard analitik                        | ✅     |
+
 
 ---
