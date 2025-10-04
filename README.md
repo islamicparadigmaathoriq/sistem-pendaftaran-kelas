@@ -262,13 +262,10 @@ Berikut adalah Entity Relationship Diagram (ERD) sistem yang digenerasi dari sup
 
 **Keterangan simbol:**
 
-| Simbol | Arti |
-| :---: | :--- |
-| 🔑 | **Primary key** |
-| # | **Identity** |
-| 👆 | **Unique** |
-| ◇ | **Nullable** |
-| ◆ | **Non-Nullable** |
+| Simbol | Arti | Deskripsi |
+| :---: | :--- | :--- |
+| 🔑 | **Primary Key** | Kolom unik yang menjadi identitas utama setiap baris data (contoh: `id`). |
+| ❓ | **Kolom Opsional** | Kolom yang nilainya boleh kosong (`NULL`) (contoh: `description` pada Class). |
 
 ---
 
