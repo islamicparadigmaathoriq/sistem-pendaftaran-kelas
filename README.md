@@ -237,7 +237,7 @@ DATABASE_URL="postgresql://postgres:<PASSWORD>@db.<HASH>.supabase.co:6543/postgr
 
 * **Email Tidak Terkirim di Vercel**: Pastikan `EMAIL_USER` dan `EMAIL_PASS` (App Password tanpa spasi) sudah benar di Environment Variables Vercel.
 
-E2E Test Gagal: Pastikan file `.env` sudah ada dan terisi dengan benar. Pastikan juga akun yang digunakan untuk tes ada di database, perannya `ADMIN`, dan kredensialnya cocok.
+* **E2E Test Gagal**: Pastikan file `.env` sudah ada dan terisi dengan benar. Pastikan juga akun yang digunakan untuk tes ada di database, perannya `ADMIN`, dan kredensialnya cocok.
 
 ---
 
@@ -262,13 +262,10 @@ Berikut adalah Entity Relationship Diagram (ERD) sistem yang digenerasi dari sup
 
 **Keterangan simbol:**
 
-| Simbol | Arti |
-| :---: | :--- |
-| 🔑 | **Primary key** |
-| # | **Identity** |
-| 👆 | **Unique** |
-| ◇ | **Nullable** |
-| ◆ | **Non-Nullable** |
+| Simbol | Arti | Deskripsi |
+| :---: | :--- | :--- |
+| 🔑 | **Primary Key** | Kolom unik yang menjadi identitas utama setiap baris data (contoh: `id`). |
+| ❓ | **Kolom Opsional** | Kolom yang nilainya boleh kosong (`NULL`) (contoh: `description` pada Class). |
 
 ---
 
